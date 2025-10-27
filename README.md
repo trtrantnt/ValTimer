@@ -98,7 +98,7 @@ git clone https://github.com/trtrantnt/ValTimerv1.2.git
 cd ValTimerv1.2
 
 # Install dependencies
-pip install opencv-python numpy mss pillow pystray
+pip install -r requirements.txt
 
 # Run the application
 python timer_valo.py
@@ -172,7 +172,7 @@ git clone https://github.com/trtrantnt/ValTimerv1.2.git
 cd ValTimerv1.2
 
 # 2. Install dependencies
-pip install opencv-python numpy mss pillow pystray pyinstaller
+pip install -r requirements.txt
 
 # 3. Build executable
 python -m PyInstaller --onefile --windowed --name "ValTimer" timer_valo.py
