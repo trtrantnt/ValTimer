@@ -22,8 +22,6 @@
 - [Screenshots](#-screenshots)
 - [Installation](#-installation)
 - [Usage](#-usage)
-- [Spike Mechanics](#-spike-mechanics)
-- [Supported Resolutions](#-supported-resolutions)
 - [Building from Source](#-building-from-source)
 - [Technologies](#-technologies)
 - [FAQ](#-faq)
@@ -138,37 +136,7 @@ python timer_valo.py
 
 ---
 
-## 📊 Spike Mechanics
-
-| Event | Time | Details |
-|-------|------|---------|
-| **Plant Duration** | 4s | Time to plant the Spike |
-| **Detonation Timer** | 45s | Total time before explosion |
-| **Double Beep** | 20s | Audio cue at 20s remaining |
-| **Triple Beep** | 10s | Audio cue at 10s remaining |
-| **White Sphere** | 7s | Visual cue at 7s remaining |
-| **Defuse Duration** | 7s | Time to fully defuse |
-| **Half Defuse** | 3.5s | Checkpoint - restarts from here if interrupted |
-
-> **Note**: If defuse is interrupted after half-defuse, it resumes from 3.5s (not from 7s)
-
----
-
-## 🖥️ Supported Resolutions
-
-The application detects Spike UI element using optimized ROI (Region of Interest) for each resolution:
-
-| Resolution | Aspect Ratio | ROI Coordinates | Status |
-|------------|--------------|-----------------|--------|
-| 1920x1080 | 16:9 | Custom ROI | ✅ Tested |
-| 2560x1440 | 16:9 | Custom ROI | ✅ Tested |
-| 1440x1080 | 4:3 | `left: 658, top: 0, width: 106, height: 94` | ✅ Tested |
-
-> **Other resolutions**: Currently not supported. Feel free to submit an issue to request support!
-
----
-
-## 🔨 Building from Source
+##  Building from Source
 
 ### Prerequisites
 
