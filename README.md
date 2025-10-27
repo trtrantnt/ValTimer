@@ -134,9 +134,30 @@ python timer_valo.py
 - **Show Window**: Right-click tray icon → Show
 - **Exit**: Right-click tray icon → Exit
 
+### Finding ROI for Custom Resolution
+
+If your resolution is not supported, use `find_spike_position.py` to find the correct ROI:
+
+```bash
+# 1. Run the ROI finder tool
+python find_spike_position.py
+
+# 2. Go to Valorant and plant the Spike
+# 3. Alt+Tab back and press Enter to capture screen
+# 4. Draw a rectangle around the Spike icon
+# 5. Press 's' to save ROI coordinates
+
+# 6. Copy the output to timer_valo.py RESOLUTION_SETTINGS
+```
+
+The tool will generate:
+- ✅ ROI coordinates in Python format
+- ✅ JSON file with ROI data
+- ✅ Screenshot and ROI region image
+
 ---
 
-##  Building from Source
+## 🔨 Building from Source
 
 ### Prerequisites
 
