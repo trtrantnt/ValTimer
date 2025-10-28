@@ -45,12 +45,14 @@ Perfect for:
 
 ### 🔍 **Automatic Detection**
 - Real-time Spike plant detection using OpenCV template matching
+- **Intelligent round-end detection** - automatically stops countdown when round ends
 - No game modifications or memory reading required
 - Works entirely through screen capture (safe & undetectable)
 
 ### ⏰ **Precise Countdown**
 - 45-second countdown overlay appears automatically
 - Large, visible timer on your screen
+- **Auto-stop on round end** - detects when Spike icon disappears
 - 50-second cooldown between detections to prevent false triggers
 
 ### 🖥️ **Multi-Resolution Support**
@@ -72,7 +74,15 @@ Perfect for:
 ### 🔧 **Additional Features**
 - Debug mode for ROI visualization
 - Tooltip hints for all buttons
+- **Adaptive scan rate** - reduces CPU usage by 90% during countdown
+- **Performance optimized** - efficient frame skipping and smart detection
 - Lightweight and runs in the background
+
+### ⚡ **Performance Optimization**
+- **90% CPU reduction** during countdown (20 FPS → ~1.67 effective FPS)
+- Adaptive scan rate: 20 FPS during detection, 5 FPS with frame skipping during countdown
+- Smart resource management for long gaming sessions
+- See [PERFORMANCE_OPTIMIZATION.md](PERFORMANCE_OPTIMIZATION.md) for details
 
 ---
 
@@ -209,29 +219,51 @@ python app_icon.py
 2. **Edge Detection**: Applies Canny edge detection (thresholds: 100, 200)
 3. **Template Matching**: Uses `TM_CCOEFF_NORMED` method
 4. **Threshold**: Match confidence > 0.15 triggers countdown
-5. **Cooldown**: 50-second cooldown prevents duplicate detections
+5. **Round-End Detection**: Monitors Spike icon disappearance (10 consecutive frames < 0.05 threshold)
+6. **Cooldown**: 50-second cooldown prevents duplicate detections
+
+### Performance Features
+
+- **Adaptive Scan Rate**: Automatically reduces from 20 FPS to 5 FPS during countdown
+- **Frame Skipping**: Processes only 1 out of 3 frames during countdown (~1.67 effective FPS)
+- **Smart Detection**: Stops countdown when round ends (Spike explodes/defused)
+- **Resource Efficient**: 90% CPU usage reduction during active countdown
 
 ---
 
 ## ❓ FAQ
 
 ### **Q: Is this safe to use? Will I get banned?**
+
 A: ValTimer only uses screen capture - it doesn't modify game files or read game memory. It's completely external and undetectable.
 
 ### **Q: Why isn't detection working?**
+
 A: Make sure you've selected the correct resolution matching your Valorant display settings.
 
 ### **Q: Can I use this on other resolutions?**
+
 A: Currently only 1080p, 1440p, and 4:3 (1440x1080) are supported. Submit an issue to request your resolution!
 
 ### **Q: Does this work with Vanguard anti-cheat?**
+
 A: Yes! ValTimer runs completely outside the game and doesn't interact with Valorant's process.
 
 ### **Q: The timer appears at wrong times**
+
 A: Try adjusting detection threshold or ensure proper resolution is selected. Debug mode can help visualize ROI.
 
 ### **Q: How do I enable debug mode?**
+
 A: Open `timer_valo.py`, change `DEBUG_MODE = False` to `DEBUG_MODE = True`, and rebuild.
+
+### **Q: Does the timer stop when the round ends?**
+
+A: Yes! The timer automatically detects when the Spike icon disappears (round ends) and stops the countdown immediately.
+
+### **Q: Will this slow down my game?**
+
+A: No! ValTimer uses adaptive scan rate and frame skipping to minimize CPU usage (only ~1.67 FPS during countdown), ensuring zero impact on game performance.
 
 ---
 
