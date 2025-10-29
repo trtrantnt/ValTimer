@@ -43,6 +43,12 @@ Perfect for:
 
 ## ✨ Features
 
+### 🌐 **Bilingual Support (NEW in v1.3.0)**
+- **Vietnamese/English** - Full language switching
+- **EN/VI Toggle Button** - Switch languages instantly
+- All UI elements translated (buttons, labels, info panels, warnings)
+- Seamless language switching without restart
+
 ### 🔍 **Automatic Detection**
 - Real-time Spike plant detection using OpenCV template matching
 - **Intelligent round-end detection** - automatically stops countdown when round ends
@@ -51,32 +57,37 @@ Perfect for:
 
 ### ⏰ **Precise Countdown**
 - 45-second countdown overlay appears automatically
-- Large, visible timer on your screen
+- **Color-Coded Timer**:
+  - 🟦 Cyan (45s-21s): Safe period
+  - 🟨 Yellow (20s-11s): Warning
+  - 🟧 Orange (10s-8s): Danger
+  - 🟥 Red (<7s): Critical with decimal display
+- **Live Position Updates** - Change overlay position while running (no restart)
+- **4 Corner Positions** - Top-left, top-right, bottom-left, bottom-right
 - **Auto-stop on round end** - detects when Spike icon disappears
 - 50-second cooldown between detections to prevent false triggers
 
 ### 🖥️ **Multi-Resolution Support**
-- **1920x1080** (Full HD)
-- **2560x1440** (2K/1440p)
-- **1440x1080** (4:3 stretched)
+- **1920x1080** (Full HD) - All 4 corners
+- **2560x1440** (2K/1440p) - All 4 corners
+- **1440x1080** (4:3 stretched) - All 4 corners
 - Optimized ROI (Region of Interest) for each resolution
 
-### 🎨 **Valorant-Themed UI**
-- Modern card-style interface with Valorant color scheme
-- Clean, intuitive controls
-- System tray integration (minimize to tray)
+### 🎨 **Modern UI**
+- **Valorant-Themed Interface** with modern card-style design
+- **Collapsible Info Panels** - Spike Info and About Me panels expand inline
+- **Improved Button Layout** - 3 centered buttons with optimized sizing:
+  - Spike Info (Blue): Spike mechanics and timings
+  - About Me (Blue): App information
+  - EN/VI (Green): Language switcher
+- **System Tray Integration** - Minimize to tray
+- **EXIT Button** - Quick exit from main window
 
-### ℹ️ **Spike Mechanics Reference**
-- Built-in popup with accurate Valorant Spike timings
-- Plant times, defuse times, audio cues
-- Half-defuse checkpoint information
-
-### 🔧 **Additional Features**
-- Debug mode for ROI visualization
-- Tooltip hints for all buttons
-- **Adaptive scan rate** - reduces CPU usage by 90% during countdown
-- **Performance optimized** - efficient frame skipping and smart detection
-- Lightweight and runs in the background
+### � **Information Panels**
+- **Spike Info Panel**: Detailed Spike mechanics (plant, detonate, defuse timings)
+- **About Panel**: App version, developer info, GitHub link
+- **Mutual Exclusion**: Opening one panel closes the other
+- **Windowed Fullscreen Warning**: Clear orange warning for game mode requirement
 
 ### ⚡ **Performance Optimization**
 - **90% CPU reduction** during countdown (20 FPS → ~1.67 effective FPS)
@@ -134,9 +145,27 @@ python timer_valo.py
 | **1920x1080** | Select Full HD resolution |
 | **2560x1440** | Select 2K/1440p resolution |
 | **1440x1080** | Select 4:3 stretched resolution |
-| **Start Detection** | Begin monitoring for Spike plant |
-| **Stop** | Stop detection and hide timer |
-| **ℹ️ Info** | View Spike mechanics and timings |
+| **Top-Left/Right/Bottom-Left/Right** | Choose countdown overlay position |
+| **Thông Tin Spike / Spike Info** | View Spike mechanics and timings |
+| **Về Tác Giả / About Me** | View app information |
+| **EN/VI** | Switch between English and Vietnamese |
+| **❌ EXIT** | Exit application |
+| **⏹ STOP TIMER** | Stop detection and hide timer |
+
+### Language Switching
+
+- Click the **🌐 EN/VI** button to toggle between Vietnamese and English
+- All UI elements update instantly
+- Language preference persists across sessions
+- **Vietnamese**: Full translation including buttons, labels, and info panels
+- **English**: Original English interface
+
+### Countdown Position
+
+- **Change position anytime** - even while timer is running!
+- Choose from 4 corner positions for each resolution
+- No need to restart detection
+- Position updates immediately on screen
 
 ### System Tray
 
@@ -239,7 +268,23 @@ A: ValTimer only uses screen capture - it doesn't modify game files or read game
 
 ### **Q: Why isn't detection working?**
 
-A: Make sure you've selected the correct resolution matching your Valorant display settings.
+A: Make sure you've selected the correct resolution matching your Valorant display settings. Also ensure Valorant is in **Windowed Fullscreen** mode (not Fullscreen).
+
+### **Q: Can I change the language?**
+
+A: Yes! Click the **🌐 EN/VI** button to switch between Vietnamese and English. All text updates instantly.
+
+### **Q: Can I move the countdown timer while it's running?**
+
+A: Yes! Select any of the 4 corner positions and the timer will move immediately without restarting detection.
+
+### **Q: What do the timer colors mean?**
+
+A:
+- **Cyan (45s-21s)**: Safe period - plenty of time
+- **Yellow (20s-11s)**: Warning - consider your position
+- **Orange (10s-8s)**: Danger - time to decide
+- **Red (<7s)**: Critical - shows decimals for precise timing
 
 ### **Q: Can I use this on other resolutions?**
 
@@ -264,6 +309,10 @@ A: Yes! The timer automatically detects when the Spike icon disappears (round en
 ### **Q: Will this slow down my game?**
 
 A: No! ValTimer uses adaptive scan rate and frame skipping to minimize CPU usage (only ~1.67 FPS during countdown), ensuring zero impact on game performance.
+
+### **Q: What's the difference between the Info and About panels?**
+
+A: **Spike Info** shows game mechanics (plant/defuse timings), while **About Me** shows app information (version, developer, GitHub).
 
 ---
 
@@ -307,8 +356,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 <div align="center">
 
 **⭐ If you find this project useful, please consider giving it a star!**
-
-Made with ❤️ for the Valorant community
 
 [⬆ Back to Top](#️-valtimer---valorant-spike-timer)
 

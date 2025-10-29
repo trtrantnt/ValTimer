@@ -48,6 +48,81 @@ RESOLUTION_SETTINGS = {
 stop_event = threading.Event()
 last_detection_time = 0
 countdown_active = False  # Track if countdown is currently running
+active_countdown_win = None  # Global reference to active countdown overlay
+
+# Language support
+current_language = 'vi'  # Default: Vietnamese
+
+LANGUAGES = {
+    'vi': {
+        'title': 'ValTimer - Valorant Spike Timer',
+        'subtitle': '⚠️ Chỉ hoạt động với Valorant ở chế độ Windowed Fullscreen',
+        'resolution': 'Độ Phân Giải',
+        'position': 'Vị Trí Overlay',
+        'top_left': 'Trên Trái',
+        'top_right': 'Trên Phải',
+        'bottom_left': 'Dưới Trái',
+        'bottom_right': 'Dưới Phải',
+        'debug_mode': 'Debug Mode (hiển thị điểm phù hợp)',
+        'ready': '⚫ Sẵn Sàng',
+        'running': '🟢 Đang Chạy...',
+        'exit': '❌ THOÁT',
+        'stop_timer': '⏹ DỪNG BỘ ĐẾM',
+        'spike_info': 'ℹ️ Thông Tin Spike',
+        'hide': 'ℹ️ Ẩn',
+        'about_me': '👤 Về Tác Giả',
+        'about_hide': '👤 Ẩn',
+        'language': '🌐 EN/VI',
+        'info_text': '⏱️ Spike: Cài 4s → Nổ 45s (20s=2 tiếng bíp, 10s=3 tiếng bíp, 7s=quả cầu) → Gỡ 7s (3.5s=nửa)',
+        'about_text': '🎮 ValTimer v1.2 - Bộ Đếm Spike Valorant\n'
+                     '👨‍💻 Tác giả: trtrantnt\n'
+                     '🔗 GitHub: github.com/trtrantnt/ValTimerv1.2\n'
+                     '⚠️ Chỉ hoạt động với Valorant ở chế độ Windowed Fullscreen',
+        'tooltip_exit': 'Thoát ứng dụng hoàn toàn',
+        'tooltip_info': 'Hiển thị/ẩn thông tin Spike',
+        'tooltip_about': 'Hiển thị/ẩn thông tin ứng dụng',
+        'tooltip_debug': 'Hiển thị điểm phù hợp và debug overlay',
+        'tooltip_language': 'Chuyển sang Tiếng Anh / Switch to English',
+        'resolution_mismatch': 'Cảnh Báo Độ Phân Giải',
+        'resolution_warning': 'Cảnh báo: Màn hình hiện tại là {0}x{1},\nnhưng bạn đã chọn cấu hình cho {2}x{3}.\nĐiều này có thể khiến phát hiện thất bại. Vẫn tiếp tục?'
+    },
+    'en': {
+        'title': 'ValTimer - Valorant Spike Timer',
+        'subtitle': '⚠️ Only works with Valorant in Windowed Fullscreen mode',
+        'resolution': 'Resolution',
+        'position': 'Overlay Position',
+        'top_left': 'Top Left',
+        'top_right': 'Top Right',
+        'bottom_left': 'Bottom Left',
+        'bottom_right': 'Bottom Right',
+        'debug_mode': 'Debug Mode (show match score)',
+        'ready': '⚫ Ready',
+        'running': '🟢 Running...',
+        'exit': '❌ EXIT',
+        'stop_timer': '⏹ STOP TIMER',
+        'spike_info': 'ℹ️ Spike Info',
+        'hide': 'ℹ️ Hide',
+        'about_me': '👤 About Me',
+        'about_hide': '👤 Hide',
+        'language': '🌐 EN/VI',
+        'info_text': '⏱️ Spike: Plant 4s → Detonate 45s (20s=2beep, 10s=3beep, 7s=sphere) → Defuse 7s (3.5s=half)',
+        'about_text': '🎮 ValTimer v1.2 - Valorant Spike Timer Overlay\n'
+                     '👨‍💻 Developer: trtrantnt\n'
+                     '🔗 GitHub: github.com/trtrantnt/ValTimerv1.2\n'
+                     '⚠️ Only works with Valorant in Windowed Fullscreen mode',
+        'tooltip_exit': 'Exit application completely',
+        'tooltip_info': 'Show/hide Spike mechanics info',
+        'tooltip_about': 'Show/hide app information',
+        'tooltip_debug': 'Show detection match score and debug overlay',
+        'tooltip_language': 'Switch to Vietnamese / Chuyển sang Tiếng Việt',
+        'resolution_mismatch': 'Resolution Mismatch',
+        'resolution_warning': 'Warning: Your current screen is {0}x{1},\nbut you selected the configuration for {2}x{3}.\nThis may cause detection to fail. Continue anyway?'
+    }
+}
+
+def get_text(key):
+    """Get text in current language"""
+    return LANGUAGES[current_language].get(key, key)
 
 class OverlayWindow(tk.Toplevel):
     """Base class for all overlay windows, encapsulating common settings."""
@@ -78,11 +153,72 @@ class ScoreDisplay(OverlayWindow):
             self.label.config(text=f"Match: {score:.3f}", fg="white")
 
 class CountdownTimer(OverlayWindow):
-    """Displays a large countdown timer on the screen."""
-    def __init__(self, master):
-        super().__init__(master, "+20+20") # Default to top-left corner
-        self.label = tk.Label(self, text="", font=("Helvetica", 32, "bold"), fg="white", bg="black")
-        self.label.pack(pady=15, padx=15)
+    """Displays a minimalist, transparent countdown timer overlay."""
+    def __init__(self, master, position="top-left", resolution="1k"):
+        # Position mappings for different resolutions
+        positions_1080p = {
+            "top-left": "+10+10",
+            "top-right": "+1800+10",
+            "bottom-left": "+10+1000",
+            "bottom-right": "+1800+1000"
+        }
+        
+        positions_1440p = {  # 2K (2560x1440)
+            "top-left": "+10+10",
+            "top-right": "+2400+10",
+            "bottom-left": "+10+1360",
+            "bottom-right": "+2400+1360"
+        }
+        
+        positions_43 = {  # 4:3 (1440x1080)
+            "top-left": "+10+10",
+            "top-right": "+1320+10",
+            "bottom-left": "+10+1000",
+            "bottom-right": "+1320+1000"
+        }
+        
+        # Select position mapping based on resolution
+        if resolution == "2k":
+            position_map = positions_1440p
+        elif resolution == "4:3":
+            position_map = positions_43
+        else:  # "1k" or default
+            position_map = positions_1080p
+        
+        geometry = position_map.get(position, "+10+10")
+        super().__init__(master, geometry)
+        
+        # Store position and resolution for later updates
+        self.position = position
+        self.resolution = resolution
+        
+        # Minimalist transparent design - NO BACKGROUND, NO BORDERS
+        self.configure(bg='black')  # Transparent background
+        
+        # Main countdown number - LARGE, BOLD, SEMI-TRANSPARENT
+        self.label = tk.Label(
+            self,
+            text="",
+            font=("Consolas", 48, "bold"),
+            fg="white",
+            bg="black",  # Will be transparent
+            bd=0,
+            padx=5,
+            pady=5
+        )
+        self.label.pack()
+        
+        # Optional: Small "s" for seconds below (very minimal)
+        self.seconds_label = tk.Label(
+            self,
+            text="",
+            font=("Consolas", 12),
+            fg="#ffffff",
+            bg="black",
+            bd=0
+        )
+        self.seconds_label.pack()
+        
         self.job_id = None
         self.withdraw() # Hidden by default
 
@@ -125,14 +261,76 @@ class CountdownTimer(OverlayWindow):
             self._update_display(remaining)
             self.job_id = self.after(50, self.tick, end_time) # Refresh every 50ms
 
-    def _update_display(self, remaining_time):
-        if remaining_time <= 7: color = "#ff4757"  # Red
-        elif remaining_time <= 14: color = "#ffa502" # Orange
-        else: color = "white"
+    def update_position(self, new_position):
+        """Update overlay position immediately (live update while app running)"""
+        positions_1080p = {
+            "top-left": "+10+10",
+            "top-right": "+1800+10",
+            "bottom-left": "+10+1000",
+            "bottom-right": "+1800+1000"
+        }
         
-        # Show one decimal place in the last 10 seconds for added tension
-        text = f"{remaining_time:.1f}" if 0 < remaining_time <= 10 else f"{int(round(remaining_time))}"
+        positions_1440p = {  # 2K (2560x1440)
+            "top-left": "+10+10",
+            "top-right": "+2400+10",
+            "bottom-left": "+10+1360",
+            "bottom-right": "+2400+1360"
+        }
+        
+        positions_43 = {  # 4:3 (1440x1080)
+            "top-left": "+10+10",
+            "top-right": "+1320+10",
+            "bottom-left": "+10+1000",
+            "bottom-right": "+1320+1000"
+        }
+        
+        # Select position mapping based on current resolution
+        if self.resolution == "2k":
+            position_map = positions_1440p
+        elif self.resolution == "4:3":
+            position_map = positions_43
+        else:  # "1k" or default
+            position_map = positions_1080p
+        
+        self.position = new_position
+        geometry = position_map.get(new_position, "+10+10")
+        self.geometry(geometry)
+        print(f"✅ Countdown overlay moved to: {new_position} ({geometry})")
+
+    def _update_display(self, remaining_time):
+        # Color scheme with 4 distinct time thresholds
+        if remaining_time <= 7:
+            color = "#ff4655"  # Valorant Red - CRITICAL (show decimal)
+            glow = True
+        elif remaining_time <= 10:
+            color = "#ffa502"  # Orange - URGENT
+            glow = False
+        elif remaining_time <= 20:
+            color = "#ffeb3b"  # Yellow - WARNING
+            glow = False
+        else:
+            color = "#00d9ff"  # Cyan - SAFE (>20s)
+            glow = False
+        
+        # Format time display - show decimal ONLY when critical (<7s)
+        if 0 < remaining_time <= 7:
+            # Show decimal in critical moments (7s countdown)
+            text = f"{remaining_time:.1f}"
+        else:
+            # Show integer for all other times
+            text = f"{int(round(remaining_time))}"
+        
+        # Update main timer with color
         self.label.config(text=text, fg=color)
+        
+        # Optional: hide "s" label for minimal look
+        # self.seconds_label.config(text="")
+        
+        # Add pulsing effect for last 7 seconds (subtle size change)
+        if glow and int(remaining_time * 2) % 2 == 0:
+            self.label.config(font=("Consolas", 52, "bold"))  # Pulse larger
+        else:
+            self.label.config(font=("Consolas", 48, "bold"))  # Normal size
 
 
 def prepare_template(b64_string):
@@ -236,9 +434,9 @@ def main():
 
     # --- Window Initialization ---
     root = tk.Tk()
-    root.title("Valorant Spike Timer")
-    root.geometry("600x430")
-    root.minsize(600, 430)
+    root.title(get_text('title'))
+    root.geometry("600x600")
+    root.minsize(600, 600)
     root.resizable(False, False)
     root.configure(bg='#0f1923')
     
@@ -308,8 +506,8 @@ def main():
     lbl_title = tk.Label(title_frame, text="VALORANT SPIKE TIMER", font=("Segoe UI", 20, 'bold'), fg=style['accent'], bg=style['bg'], pady=2)
     lbl_title.pack()
     
-    # Subtitle with icon
-    lbl_sub = tk.Label(header, text="⚡ Auto-detect spike and show a 45s overlay", font=("Segoe UI", 9), fg=style['muted'], bg=style['bg'])
+    # Subtitle with icon - Important note about game mode
+    lbl_sub = tk.Label(header, text=get_text('subtitle'), font=("Segoe UI", 9), fg='#ffa502', bg=style['bg'])
     lbl_sub.pack()
 
     # main panel with card styling
@@ -320,7 +518,7 @@ def main():
     panel.pack(fill='both', expand=True)
 
     # Resolution title
-    res_title = tk.Label(panel, text="SELECT RESOLUTION", font=("Segoe UI", 9, 'bold'), fg=style['muted'], bg=style['panel'])
+    res_title = tk.Label(panel, text=get_text('resolution').upper(), font=("Segoe UI", 9, 'bold'), fg=style['muted'], bg=style['panel'])
     res_title.pack(pady=(15, 8))
 
     # Resolution buttons with card style
@@ -343,11 +541,73 @@ def main():
         
         tk.Label(container, text=small, font=("Segoe UI", 8), fg=style['muted'], bg=style['panel']).pack(pady=(2,0))
         buttons[k] = b
-        ToolTip(b, f"Use the {label_txt} configuration ({small})")
 
     # Separator
     separator = tk.Frame(panel, bg='#2a3744', height=1)
     separator.pack(fill='x', padx=20, pady=(5, 8))
+    
+    # Position selection title
+    pos_title = tk.Label(panel, text=get_text('position').upper(), font=("Segoe UI", 9, 'bold'), fg=style['muted'], bg=style['panel'])
+    pos_title.pack(pady=(8,4))
+    
+    position_frame = tk.Frame(panel, bg=style['panel'])
+    position_frame.pack(pady=(0, 12))
+    
+    position_buttons = {}
+    position_var = tk.StringVar(value="top-left")  # Default position
+    
+    positions_config = [
+        ("top-left", "↖ {0}", 0, 0, 'top_left'),
+        ("top-right", "↗ {0}", 0, 1, 'top_right'),
+        ("bottom-left", "↙ {0}", 1, 0, 'bottom_left'),
+        ("bottom-right", "↘ {0}", 1, 1, 'bottom_right')
+    ]
+    
+    for pos_key, pos_label_template, row, col, lang_key in positions_config:
+        btn = tk.Button(
+            position_frame,
+            text=pos_label_template.format(get_text(lang_key)),
+            font=("Segoe UI", 9, 'bold'),
+            bg=style['btn'],
+            fg=style['fg'],
+            activebackground=style['accent'],
+            activeforeground='white',
+            width=12,
+            height=1,
+            bd=0,
+            cursor='hand2',
+            relief='flat',
+            highlightthickness=1,
+            highlightbackground='#2a3744',
+            command=lambda p=pos_key: select_position(p)
+        )
+        btn.grid(row=row, column=col, padx=8, pady=4)
+        position_buttons[pos_key] = btn
+    
+    def select_position(pos):
+        position_var.set(pos)
+        # Update button styling
+        for key, btn in position_buttons.items():
+            if key == pos:
+                btn.config(bg=style['accent'], fg='white')
+            else:
+                btn.config(bg=style['btn'], fg=style['fg'])
+        
+        # ✨ NEW: Update countdown overlay position IMMEDIATELY (live update)
+        global active_countdown_win
+        if active_countdown_win:
+            active_countdown_win.update_position(pos)
+            print(f"🔄 Position changed to: {pos}")
+    
+    # Set default position styling
+    select_position("top-left")
+    
+    # Set default position styling
+    select_position("top-left")
+
+    # Separator
+    separator2 = tk.Frame(panel, bg='#2a3744', height=1)
+    separator2.pack(fill='x', padx=20, pady=(5, 8))
 
     # options row - DEBUG MODE HIDDEN (set DEBUG_MODE = True to show)
     DEBUG_MODE = False  # Change to True to enable debug checkbox
@@ -356,9 +616,8 @@ def main():
         opts.pack(fill='x', padx=12, pady=(4,12))
     debug_mode_var = tk.BooleanVar()
     if DEBUG_MODE:
-        chk = tk.Checkbutton(opts, text='Enable Debug Mode', variable=debug_mode_var, bg=style['panel'], fg=style['fg'], selectcolor=style['btn'], activebackground=style['panel'], activeforeground=style['accent'], font=("Segoe UI", 9), cursor='hand2', bd=0)
+        chk = tk.Checkbutton(opts, text=get_text('debug_mode'), variable=debug_mode_var, bg=style['panel'], fg=style['fg'], selectcolor=style['btn'], activebackground=style['panel'], activeforeground=style['accent'], font=("Segoe UI", 9), cursor='hand2', bd=0)
         chk.pack(side='left')
-        ToolTip(chk, 'Show detection match score and debug overlay')
 
     # status + control with card style
     status_frame = tk.Frame(root, bg=style['bg'])
@@ -367,68 +626,226 @@ def main():
     status_panel = tk.Frame(status_frame, bg=style['panel'], relief='flat', highlightthickness=1, highlightbackground='#2a3744')
     status_panel.pack(fill='x')
     
-    status_label = tk.Label(status_panel, text='⚫ Ready', bg=style['panel'], fg=style['muted'], font=("Segoe UI", 10, 'bold'), pady=10)
+    status_label = tk.Label(status_panel, text=get_text('ready'), bg=style['panel'], fg=style['muted'], font=("Segoe UI", 10, 'bold'), pady=10)
     status_label.pack(side='left', padx=15)
 
-    stop_button = tk.Button(status_panel, text='⏹ STOP TIMER', font=("Segoe UI", 10, 'bold'), bg=style['btn'], fg=style['muted'], activebackground=style['accent'], activeforeground='white', state='disabled', bd=0, width=13, cursor='hand2', relief='flat')
+    # Exit button (closes app completely)
+    exit_button = tk.Button(
+        status_panel, 
+        text=get_text('exit'), 
+        font=("Segoe UI", 10, 'bold'), 
+        bg='#e74c3c',  # Red background
+        fg='white', 
+        activebackground='#c0392b', 
+        activeforeground='white', 
+        bd=0, 
+        width=10, 
+        cursor='hand2', 
+        relief='flat'
+    )
+    exit_button.pack(side='right', padx=(0, 12), pady=8)
+
+    stop_button = tk.Button(status_panel, text=get_text('stop_timer'), font=("Segoe UI", 10, 'bold'), bg=style['btn'], fg=style['muted'], activebackground=style['accent'], activeforeground='white', state='disabled', bd=0, width=18, cursor='hand2', relief='flat')
     stop_button.pack(side='right', padx=12, pady=8)
 
-    # Spike Info Button (below stop button)
-    def show_spike_info():
-        info_win = tk.Toplevel(root)
-        info_win.title("Spike Mechanics")
-        info_win.geometry("420x365")
-        info_win.configure(bg=style['bg'])
-        info_win.resizable(False, False)
-        info_win.lift()
-        info_win.attributes('-topmost', True)
-        
-        title = tk.Label(info_win, text="⏱️ SPIKE MECHANICS", bg=style['bg'], fg=style['accent'], font=('Segoe UI Bold', 11))
-        title.pack(pady=8)
-        
-        # Container
-        container = tk.Frame(info_win, bg=style['bg'])
-        container.pack(fill='both', expand=True, padx=12, pady=(0, 6))
-        
-        # Planting
-        plant_frame = tk.Frame(container, bg=style['panel'], relief='ridge', bd=1)
-        plant_frame.pack(fill='x', pady=2)
-        tk.Label(plant_frame, text="🌱 PLANTING", bg=style['panel'], fg=style['accent'], font=('Segoe UI Bold', 9), anchor='w').pack(padx=8, pady=(4,2))
-        tk.Label(plant_frame, text="• Takes 4 seconds", bg=style['panel'], fg='white', font=('Segoe UI', 8), anchor='w').pack(padx=16, pady=(0,4), anchor='w')
-        
-        # Detonation
-        det_frame = tk.Frame(container, bg=style['panel'], relief='ridge', bd=1)
-        det_frame.pack(fill='x', pady=2)
-        tk.Label(det_frame, text="💣 DETONATION TIMER", bg=style['panel'], fg=style['accent'], font=('Segoe UI Bold', 9), anchor='w').pack(padx=8, pady=(4,2))
-        tk.Label(det_frame, text="• 45 seconds - Consistent beeping", bg=style['panel'], fg='white', font=('Segoe UI', 8), anchor='w').pack(padx=16, pady=0, anchor='w')
-        tk.Label(det_frame, text="• 20 seconds - Double beeping", bg=style['panel'], fg='white', font=('Segoe UI', 8), anchor='w').pack(padx=16, pady=0, anchor='w')
-        tk.Label(det_frame, text="• 10 seconds - Triple beeping", bg=style['panel'], fg='white', font=('Segoe UI', 8), anchor='w').pack(padx=16, pady=0, anchor='w')
-        tk.Label(det_frame, text="• 7 seconds - White sphere closes in", bg=style['panel'], fg=style['accent'], font=('Segoe UI', 8), anchor='w').pack(padx=16, pady=(0,4), anchor='w')
-        
-        # Defusing
-        def_frame = tk.Frame(container, bg=style['panel'], relief='ridge', bd=1)
-        def_frame.pack(fill='x', pady=2)
-        tk.Label(def_frame, text="🔧 DEFUSING", bg=style['panel'], fg=style['accent'], font=('Segoe UI Bold', 9), anchor='w').pack(padx=8, pady=(4,2))
-        tk.Label(def_frame, text="• Takes 7 seconds total", bg=style['panel'], fg='white', font=('Segoe UI', 8), anchor='w').pack(padx=16, pady=(0,4), anchor='w')
-        
-        # Half defuse
-        half_frame = tk.Frame(container, bg=style['panel'], relief='ridge', bd=1)
-        half_frame.pack(fill='x', pady=2)
-        tk.Label(half_frame, text="⚡ HALF DEFUSE CHECKPOINT", bg=style['panel'], fg='#ffa500', font=('Segoe UI Bold', 9), anchor='w').pack(padx=8, pady=(4,2))
-        tk.Label(half_frame, text="• Activates at 3.5 seconds - Progress saved!", bg=style['panel'], fg='white', font=('Segoe UI', 8), anchor='w').pack(padx=16, pady=0, anchor='w')
-        tk.Label(half_frame, text="• Outer casing falls to halfway", bg=style['panel'], fg='white', font=('Segoe UI', 8), anchor='w').pack(padx=16, pady=0, anchor='w')
-        tk.Label(half_frame, text="• Audio changes to higher pitch", bg=style['panel'], fg='white', font=('Segoe UI', 8), anchor='w').pack(padx=16, pady=0, anchor='w')
-        tk.Label(half_frame, text="• If canceled, resets to 3.5s (not 0s)", bg=style['panel'], fg=style['accent'], font=('Segoe UI', 8), anchor='w').pack(padx=16, pady=(0,4), anchor='w')
-        
-        btn_close = tk.Button(info_win, text="Close", bg=style['btn'], fg=style['fg'], activebackground=style['btn_hover'], font=('Segoe UI', 9), relief='flat', cursor='hand2', command=info_win.destroy)
-        btn_close.pack(pady=(4,8), padx=12, fill='x')
-
-    info_btn_frame = tk.Frame(root, bg=style['bg'])
-    info_btn_frame.grid(row=3, column=0, sticky='ew', padx=20, pady=(0, 15))
+    # Info panel (collapsible) - will be shown/hidden ABOVE buttons
+    info_panel = tk.Frame(root, bg=style['bg'])
+    info_panel.grid(row=4, column=0, sticky='ew', padx=20, pady=(0, 0))
+    info_panel.grid_remove()  # Hidden by default
     
-    btn_spike_info = tk.Button(info_btn_frame, text='ℹ️ Info', bg='#2a3f5f', fg='white', activebackground='#3a5f7f', font=('Segoe UI', 9), relief='flat', cursor='hand2', command=show_spike_info, width=10, highlightthickness=1, highlightbackground='#1a2f4f')
-    btn_spike_info.pack(side='left', padx=0, pady=0)
-    ToolTip(btn_spike_info, "View Spike mechanics and timings")
+    info_content = tk.Frame(info_panel, bg=style['panel'], relief='ridge', bd=1)
+    info_content.pack(fill='x', pady=(0, 8))
+    
+    # Info text
+    info_text = tk.Label(
+        info_content,
+        text=get_text('info_text'),
+        bg=style['panel'],
+        fg='#ffffff',
+        font=('Segoe UI', 10, 'bold'),  # Larger font: 8→10, added bold
+        wraplength=540,
+        justify='left',
+        anchor='w',
+        padx=12,
+        pady=10  # More padding for larger text
+    )
+    info_text.pack(fill='x')
+    
+    # Toggle function
+    info_visible = [False]  # Use list to allow modification in nested function
+    
+    def toggle_spike_info():
+        # Hide about panel if it's visible
+        if about_visible[0]:
+            about_panel.grid_remove()
+            about_visible[0] = False
+            btn_about.config(text=get_text('about_me'))
+        
+        # Toggle info panel
+        if info_visible[0]:
+            info_panel.grid_remove()
+            info_visible[0] = False
+            btn_spike_info.config(text=get_text('spike_info'))
+        else:
+            info_panel.grid()
+            info_visible[0] = True
+            btn_spike_info.config(text=get_text('hide'))
+
+    # About panel (collapsible) - will be shown/hidden ABOVE buttons
+    about_panel = tk.Frame(root, bg=style['bg'])
+    about_panel.grid(row=4, column=0, sticky='ew', padx=20, pady=(0, 0))
+    about_panel.grid_remove()  # Hidden by default
+    
+    about_content = tk.Frame(about_panel, bg=style['panel'], relief='ridge', bd=1)
+    about_content.pack(fill='x', pady=(0, 8))
+    
+    # About text
+    about_text = tk.Label(
+        about_content,
+        text=get_text('about_text'),
+        bg=style['panel'],
+        fg='#ffffff',
+        font=('Segoe UI', 10, 'bold'),  # Larger font: 8→10, added bold
+        justify='left',
+        anchor='w',
+        padx=12,
+        pady=10  # More padding for larger text
+    )
+    about_text.pack(fill='x')
+    
+    # Toggle function for about
+    about_visible = [False]
+    
+    def toggle_about():
+        # Hide info panel if it's visible
+        if info_visible[0]:
+            info_panel.grid_remove()
+            info_visible[0] = False
+            btn_spike_info.config(text=get_text('spike_info'))
+        
+        # Toggle about panel
+        if about_visible[0]:
+            about_panel.grid_remove()
+            about_visible[0] = False
+            btn_about.config(text=get_text('about_me'))
+        else:
+            about_panel.grid()
+            about_visible[0] = True
+            btn_about.config(text=get_text('about_hide'))
+
+    # Buttons frame - placed BEFORE the info/about panels - CENTERED
+    info_btn_frame = tk.Frame(root, bg=style['bg'])
+    info_btn_frame.grid(row=3, column=0, pady=(0, 12))
+    
+    # Create inner frame to center the buttons
+    buttons_container = tk.Frame(info_btn_frame, bg=style['bg'])
+    buttons_container.pack()
+    
+    # Spike Info button - improved styling
+    btn_spike_info = tk.Button(
+        buttons_container, 
+        text=get_text('spike_info'), 
+        bg='#3a5f8f',  # Lighter blue
+        fg='white', 
+        activebackground='#4a7faf', 
+        font=('Segoe UI', 10, 'bold'),  # Slightly smaller for balance
+        relief='flat', 
+        cursor='hand2', 
+        command=toggle_spike_info, 
+        width=16,  # Optimized width
+        height=2,  # Taller for better look
+        bd=0,
+        highlightthickness=0
+    )
+    btn_spike_info.pack(side='left', padx=6, pady=0)
+    
+    # About button - improved styling
+    btn_about = tk.Button(
+        buttons_container, 
+        text=get_text('about_me'), 
+        bg='#3a5f8f',  # Lighter blue
+        fg='white', 
+        activebackground='#4a7faf', 
+        font=('Segoe UI', 10, 'bold'),
+        relief='flat', 
+        cursor='hand2', 
+        command=toggle_about, 
+        width=16,  # Optimized width
+        height=2,  # Taller for better look
+        bd=0,
+        highlightthickness=0
+    )
+    btn_about.pack(side='left', padx=6, pady=0)
+    
+    # Language switch button
+    def switch_language():
+        global current_language
+        current_language = 'en' if current_language == 'vi' else 'vi'
+        update_ui_language()
+    
+    btn_language = tk.Button(
+        buttons_container, 
+        text=get_text('language'), 
+        bg='#5f8f3a',  # Green color for distinction
+        fg='white', 
+        activebackground='#7faf4a', 
+        font=('Segoe UI', 10, 'bold'),
+        relief='flat', 
+        cursor='hand2', 
+        command=switch_language, 
+        width=10,  # Compact width for EN/VI
+        height=2,  # Same height as other buttons
+        bd=0,
+        highlightthickness=0
+    )
+    btn_language.pack(side='left', padx=6, pady=0)
+    
+    # Function to update all UI text
+    def update_ui_language():
+        # Update window title
+        root.title(get_text('title'))
+        
+        # Update header
+        lbl_sub.config(text=get_text('subtitle'))
+        
+        # Update resolution title
+        res_title.config(text=get_text('resolution').upper())
+        
+        # Update position title and buttons
+        pos_title.config(text=get_text('position').upper())
+        for (pos_key, _, _, _, lang_key), btn in zip(positions_config, position_buttons.values()):
+            arrow = {"top-left": "↖", "top-right": "↗", "bottom-left": "↙", "bottom-right": "↘"}[pos_key]
+            btn.config(text=f"{arrow} {get_text(lang_key)}")
+        
+        # Update status label
+        if detector_thread and detector_thread.is_alive():
+            status_label.config(text=get_text('running'))
+        else:
+            status_label.config(text=get_text('ready'))
+        
+        # Update buttons
+        exit_button.config(text=get_text('exit'))
+        stop_button.config(text=get_text('stop_timer'))
+        
+        # Update info/about buttons and panels
+        if info_visible[0]:
+            btn_spike_info.config(text=get_text('hide'))
+        else:
+            btn_spike_info.config(text=get_text('spike_info'))
+        
+        if about_visible[0]:
+            btn_about.config(text=get_text('about_hide'))
+        else:
+            btn_about.config(text=get_text('about_me'))
+        
+        # Update panel contents
+        info_text.config(text=get_text('info_text'))
+        about_text.config(text=get_text('about_text'))
+        
+        # Update language button
+        btn_language.config(text=get_text('language'))
+        
+        print(f"Language switched to: {'Tiếng Việt' if current_language == 'vi' else 'English'}")
 
     # keyboard shortcuts
     root.bind('<Escape>', lambda e: stop_detector() if stop_button['state']=='normal' else root.destroy())
@@ -443,20 +860,29 @@ def main():
         screen_w, screen_h = root.winfo_screenwidth(), root.winfo_screenheight()
         res_map = {'1k': (1920, 1080), '2k': (2560, 1440), '4:3': (1440, 1080)}
         if (screen_w, screen_h) != res_map[selection]:
-            msg = f"Warning: Your current screen is {screen_w}x{screen_h},\nbut you selected the configuration for {res_map[selection][0]}x{res_map[selection][1]}.\nThis may cause detection to fail. Continue anyway?"
-            if not messagebox.askyesno("Resolution Mismatch", msg): return
+            msg = get_text('resolution_warning').format(screen_w, screen_h, res_map[selection][0], res_map[selection][1])
+            if not messagebox.askyesno(get_text('resolution_mismatch'), msg): return
 
         config = RESOLUTION_SETTINGS[selection]
         config['debug_mode'] = debug_mode_var.get()
         
-        status_label.config(text="🟢 Running...", fg="#2ed573")
+        status_label.config(text=get_text('running'), fg="#2ed573")
         for btn in buttons.values(): btn.config(state="disabled")
         stop_button.config(state="normal", bg='#ff4655', fg='white')
         print(f"Selected {config['description']} configuration, starting detection...")
         
         stop_event.clear()
         score_win = ScoreDisplay(root) if config['debug_mode'] else None
-        countdown_win = CountdownTimer(root)
+        
+        # Create countdown window with selected position for ALL resolutions
+        selected_position = position_var.get()
+        countdown_win = CountdownTimer(root, position=selected_position, resolution=selection)
+        
+        # ✨ Store in global variable for live position updates
+        global active_countdown_win
+        active_countdown_win = countdown_win
+        
+        print(f"Countdown position: {selected_position} (Resolution: {selection})")
         
         # Show debug window and bring to front
         if score_win:
@@ -473,11 +899,12 @@ def main():
         detector_thread.start()
 
     def stop_detector():
-        global countdown_active
+        global countdown_active, active_countdown_win
         print("Stopping timer...")
         stop_event.set()
         countdown_active = False  # Stop any active countdown
-        status_label.config(text="⚫ Stopped", fg="#8a8a8a")
+        active_countdown_win = None  # Clear reference
+        status_label.config(text=get_text('ready'), fg="#8a8a8a")
         for btn in buttons.values(): btn.config(state="normal")
         stop_button.config(state="disabled", bg='#2d3a45', fg='#8a8a8a')
 
@@ -551,6 +978,7 @@ def main():
     for res, btn in buttons.items():
         btn.config(command=lambda r=res: start_detector(r))
     stop_button.config(command=stop_detector)
+    exit_button.config(command=quit_app)  # Exit button closes app completely
 
     root.protocol("WM_DELETE_WINDOW", on_closing)
 

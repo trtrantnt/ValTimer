@@ -5,6 +5,58 @@ All notable changes to ValTimer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-10-29
+
+### Added
+- **Bilingual Support (Vietnamese/English)** - Full language switching between Vietnamese and English
+- **Language Toggle Button** - EN/VI button to switch languages instantly
+- **Live Position Updates** - Change countdown overlay position while app is running (no restart needed)
+- **Collapsible Info Panels** - Info and About panels expand inline instead of popup windows
+- **Mutual Exclusion** - Opening one panel automatically closes the other
+- **EXIT Button** - Added EXIT button to main window (in addition to system tray)
+
+### Changed
+- **Countdown Display** - Removed "s" suffix (45s → 45)
+- **Decimal Display** - Show decimals only when time < 7s (critical period)
+- **Time Thresholds** - New color scheme:
+  - Cyan (#00d9ff): 45s-21s (safe period)
+  - Yellow (#ffeb3b): 20s-11s (warning)
+  - Orange (#ffa502): 10s-8s (danger)
+  - Red (#ff4655): <7s with decimals (critical)
+- **Multi-Resolution Corners** - All 4 corners supported for 1080p, 2K, and 4:3
+- **Window Size** - Increased to 600x600 to accommodate new buttons
+- **Button Styling** - Improved 3-button layout (Spike Info, About Me, EN/VI):
+  - Spike Info & About Me: Blue (#3a5f8f), width=16, height=2
+  - EN/VI: Green (#5f8f3a), width=10, height=2
+  - Centered layout with better spacing
+- **Font Sizes** - Optimized at 10pt bold for all info buttons
+- **Info Panel Display** - Panels appear ABOVE buttons instead of below
+- **Windowed Fullscreen Warning** - Orange warning text replaces auto-detect subtitle
+- **Stop Button Width** - Increased to 18 to fit Vietnamese text "DỪNG BỘ ĐẾM"
+
+### Fixed
+- **Vietnamese Text Overflow** - Increased button widths to prevent text cutoff
+- **Button Alignment** - Centered 3-button layout for better aesthetics
+- **Panel Toggle** - Fixed toggle button text updates when switching languages
+
+### Removed
+- **All Tooltips** - Removed hover tooltips from all buttons for cleaner UX
+- **Features Line** - Removed from About panel for concise information
+- **"About" Button Name** - Changed to "About Me" for personalization
+
+### Language Support Details
+- **Vietnamese UI**:
+  - Title: "ValTimer - Valorant Spike Timer" (kept in English)
+  - Resolution: "Độ Phân Giải"
+  - Position: "Vị Trí Overlay"
+  - Buttons: "THOÁT", "DỪNG BỘ ĐẾM"
+  - Info: "Thông Tin Spike", "Về Tác Giả"
+  - Spike mechanics and warnings fully translated
+  
+- **English UI**:
+  - All original English text maintained
+  - Consistent styling across languages
+
 ## [1.2.0] - 2025-10-27
 
 ### Added
