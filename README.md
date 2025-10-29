@@ -100,10 +100,12 @@ Perfect for:
 ## 📸 Screenshots
 
 ### Main Interface - English
-![ValTimer Main Interface](p1.png)
+
+![ValTimer Main Interface](https://raw.githubusercontent.com/trtrantnt/ValTimer/main/p1.png)
 
 ### Main Interface - Vietnamese
-![ValTimer Vietnamese Interface](p2.png)
+
+![ValTimer Vietnamese Interface](https://raw.githubusercontent.com/trtrantnt/ValTimer/main/p2.png)
 
 ---
 
