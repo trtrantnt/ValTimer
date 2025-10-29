@@ -51,7 +51,7 @@ countdown_active = False  # Track if countdown is currently running
 active_countdown_win = None  # Global reference to active countdown overlay
 
 # Language support
-current_language = 'vi'  # Default: Vietnamese
+current_language = 'en'  # Default: English
 
 LANGUAGES = {
     'vi': {
@@ -434,16 +434,12 @@ def main():
 
     # --- Window Initialization ---
     root = tk.Tk()
-    root.title(get_text('title'))
-    root.geometry("600x600")
-    root.minsize(600, 600)
-    root.resizable(False, False)
-    root.configure(bg='#0f1923')
     
-    # Set window icon
+    # Set window icon IMMEDIATELY (before setting title or geometry)
     try:
         import os
         import sys
+        from PIL import Image
         
         # Get the correct path for icon (works for both script and exe)
         if getattr(sys, 'frozen', False):
@@ -456,11 +452,35 @@ def main():
         icon_path = os.path.join(application_path, 'icon_ultra_sharp.ico')
         
         if os.path.exists(icon_path):
-            root.iconbitmap(icon_path)
+            # Method 1: Direct iconbitmap (must be FIRST)
+            root.iconbitmap(default=icon_path)
+            
+            # Method 2: Using PIL for additional compatibility
+            try:
+                img = Image.open(icon_path)
+                photo = tk.PhotoImage(file=icon_path)
+                root.iconphoto(True, photo)
+            except:
+                pass
+            
+            # Method 3: wm_iconbitmap as backup
+            try:
+                root.wm_iconbitmap(icon_path)
+            except:
+                pass
+            
+            print(f"Window icon loaded from: {icon_path}")
         else:
             print(f"Icon file not found at: {icon_path}")
     except Exception as e:
         print(f"Could not set window icon: {e}")
+    
+    # NOW set title and geometry (AFTER icon)
+    root.title(get_text('title'))
+    root.geometry("600x600")
+    root.minsize(600, 600)
+    root.resizable(False, False)
+    root.configure(bg='#0f1923')
 
     # colors & simple theme
     style = {

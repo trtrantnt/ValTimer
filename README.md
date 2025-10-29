@@ -99,7 +99,11 @@ Perfect for:
 
 ## 📸 Screenshots
 
-> *Coming soon - Add screenshots of your application here*
+### Main Interface - English
+![ValTimer Main Interface](p1.png)
+
+### Main Interface - Vietnamese
+![ValTimer Vietnamese Interface](p2.png)
 
 ---
 
