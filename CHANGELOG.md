@@ -5,6 +5,29 @@ All notable changes to ValTimer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2025-10-29
+
+### Changed
+- **Default Language** - Changed default language from Vietnamese to English for international users
+- **README Updates** - Added language switcher buttons for bilingual navigation
+- **Vietnamese README** - Added complete Vietnamese translation (README.vi.md)
+
+### Fixed
+- **Icon Display** - Fixed Windows taskbar icon not showing custom icon on first launch
+  - Implemented triple icon-setting method (iconbitmap with default parameter, iconphoto, wm_iconbitmap)
+  - Icon now set BEFORE window configuration (title/geometry) for immediate visibility
+  - Custom Valorant-themed icon displays correctly from first app launch
+
+### Removed
+- **Competitive Players** - Removed "competitive players" mention from About section
+- **Debug Mode FAQ** - Removed debug mode FAQ from README documentation
+- **Performance Optimization** - Removed non-existent PERFORMANCE_OPTIMIZATION.md link
+
+### Documentation
+- **Unified URLs** - All GitHub URLs updated from ValTimerv1.2 to ValTimer repository
+- **Screenshots** - Added p1.png (in-game overlay) and p2.png (main interface) to demonstrate features
+- **Language Switcher** - Added **[English](README.md) | [Tiếng Việt](README.vi.md)** navigation to both README files
+
 ## [1.3.0] - 2025-10-29
 
 ### Added
@@ -113,7 +136,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History
 
-### v1.2.0 (Current)
+### v1.3.1 (Current)
+- Default language changed to English
+- Icon display bug fixed
+- Bilingual documentation (English + Vietnamese)
+- Language switcher added
+
+### v1.3.0
+- Bilingual support added
+- Language toggle button
+- Live position updates
+
+### v1.2.0
 - Major UI overhaul
 - System tray support
 - Custom resolution tool
@@ -128,12 +162,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Upcoming Features (Roadmap)
 
-### Planned for v1.3.0
-- [ ] Multiple language support
+### Planned for v1.4.0
 - [ ] Sound notifications
 - [ ] Custom countdown duration
 - [ ] Statistics tracking
 - [ ] Auto-update feature
+- [ ] Dark mode toggle
 
 ### Planned for v2.0.0
 - [ ] Agent ability timers
@@ -145,9 +179,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Links
 
-- **Repository**: https://github.com/trtrantnt/ValTimerv1.2
-- **Issues**: https://github.com/trtrantnt/ValTimerv1.2/issues
-- **Releases**: https://github.com/trtrantnt/ValTimerv1.2/releases
+- **Repository**: https://github.com/trtrantnt/ValTimer
+- **Issues**: https://github.com/trtrantnt/ValTimer/issues
+- **Releases**: https://github.com/trtrantnt/ValTimer/releases
 
 ---
 
@@ -162,4 +196,4 @@ Special thanks to all contributors who helped make ValTimer better!
 
 ---
 
-*For more details on each release, visit the [Releases](https://github.com/trtrantnt/ValTimerv1.2/releases) page.*
+*For more details on each release, visit the [Releases](https://github.com/trtrantnt/ValTimer/releases) page.*
