@@ -9,6 +9,8 @@
 
 **Phát hiện Spike tự động và hiển thị bộ đếm thời gian overlay cho Valorant**
 
+**[English](README.md) | [Tiếng Việt](README.vi.md)**
+
 [Tải Phiên Bản Mới Nhất](https://github.com/trtrantnt/ValTimer/releases) • [Báo Lỗi](https://github.com/trtrantnt/ValTimer/issues) • [Yêu Cầu Tính Năng](https://github.com/trtrantnt/ValTimer/issues)
 
 </div>
@@ -35,10 +37,8 @@
 **ValTimer** là ứng dụng overlay thông minh tự động phát hiện khi Spike được cài trong Valorant và hiển thị bộ đếm thời gian chính xác 45 giây. Được xây dựng với computer vision (OpenCV), nó sử dụng template matching để phát hiện biểu tượng Spike trên màn hình của bạn.
 
 Hoàn hảo cho:
-- 🎮 Người chơi thi đấu cần thời gian chính xác
 - 📊 Người chơi đang học timing và rotation của Spike
 - 🏆 Đội nhóm phối hợp chiến thuật dỡ bom/phản công
-
 ---
 
 ## ✨ Tính Năng
@@ -93,7 +93,6 @@ Hoàn hảo cho:
 - **Giảm 90% CPU** trong khi đếm (20 FPS → ~1.67 FPS hiệu quả)
 - Tốc độ quét thích ứng: 20 FPS khi phát hiện, 5 FPS với bỏ qua khung hình khi đếm
 - Quản lý tài nguyên thông minh cho phiên chơi game dài
-- Xem [PERFORMANCE_OPTIMIZATION.md](PERFORMANCE_OPTIMIZATION.md) để biết chi tiết
 
 ---
 
@@ -295,9 +294,6 @@ cd dist
 
 Đ: Thử điều chỉnh ngưỡng phát hiện hoặc đảm bảo độ phân giải thích hợp được chọn. Chế độ debug có thể giúp hiển thị ROI.
 
-### **H: Làm thế nào để bật chế độ debug?**
-
-Đ: Mở `timer_valo.py`, đổi `DEBUG_MODE = False` thành `DEBUG_MODE = True`, và build lại.
 
 ### **H: Bộ đếm có dừng khi vòng kết thúc không?**
 
@@ -340,13 +336,6 @@ Chào mừng các đóng góp! Đây là cách bạn có thể giúp đỡ:
 
 Dự án này được cấp phép theo Giấy phép MIT - xem file [LICENSE](LICENSE) để biết chi tiết.
 
----
-
-## 🙏 Lời Cảm Ơn
-
-- Riot Games vì đã tạo ra Valorant
-- Cộng đồng OpenCV cho công cụ computer vision
-- Tất cả những người đóng góp và người dùng ValTimer
 
 ---
 

@@ -9,6 +9,8 @@
 
 **Automatic Spike detection and countdown timer overlay for Valorant**
 
+**[English](README.md) | [Tiếng Việt](README.vi.md)**
+
 [Download Latest Release](https://github.com/trtrantnt/ValTimer/releases) • [Report Bug](https://github.com/trtrantnt/ValTimer/issues) • [Request Feature](https://github.com/trtrantnt/ValTimer/issues)
 
 </div>
@@ -35,7 +37,6 @@
 **ValTimer** is an intelligent overlay application that automatically detects when the Spike is planted in Valorant and displays a precise 45-second countdown timer. Built with computer vision (OpenCV), it uses template matching to detect the Spike UI element on your screen.
 
 Perfect for:
-- 🎮 Competitive players who need precise timing
 - 📊 Players learning Spike timings and rotations
 - 🏆 Teams coordinating defuse/retake strategies
 
@@ -93,7 +94,6 @@ Perfect for:
 - **90% CPU reduction** during countdown (20 FPS → ~1.67 effective FPS)
 - Adaptive scan rate: 20 FPS during detection, 5 FPS with frame skipping during countdown
 - Smart resource management for long gaming sessions
-- See [PERFORMANCE_OPTIMIZATION.md](PERFORMANCE_OPTIMIZATION.md) for details
 
 ---
 
@@ -294,10 +294,6 @@ A: Yes! ValTimer runs completely outside the game and doesn't interact with Valo
 
 A: Try adjusting detection threshold or ensure proper resolution is selected. Debug mode can help visualize ROI.
 
-### **Q: How do I enable debug mode?**
-
-A: Open `timer_valo.py`, change `DEBUG_MODE = False` to `DEBUG_MODE = True`, and rebuild.
-
 ### **Q: Does the timer stop when the round ends?**
 
 A: Yes! The timer automatically detects when the Spike icon disappears (round ends) and stops the countdown immediately.
@@ -338,15 +334,6 @@ Contributions are welcome! Here's how you can help:
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- Riot Games for creating Valorant
-- OpenCV community for computer vision tools
-- All contributors and users of ValTimer
-
 ---
 
 <div align="center">
