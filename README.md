@@ -9,7 +9,7 @@
 
 **Automatic Spike detection and countdown timer overlay for Valorant**
 
-[Download Latest Release](https://github.com/trtrantnt/ValTimerv1.2/releases) • [Report Bug](https://github.com/trtrantnt/ValTimerv1.2/issues) • [Request Feature](https://github.com/trtrantnt/ValTimerv1.2/issues)
+[Download Latest Release](https://github.com/trtrantnt/ValTimer/releases) • [Report Bug](https://github.com/trtrantnt/ValTimer/issues) • [Request Feature](https://github.com/trtrantnt/ValTimer/issues)
 
 </div>
 
@@ -101,11 +101,11 @@ Perfect for:
 
 ### Main Interface - English
 
-![ValTimer Main Interface](https://raw.githubusercontent.com/trtrantnt/ValTimer/main/p1.png)
-
-### Main Interface - Vietnamese
-
 ![ValTimer Vietnamese Interface](https://raw.githubusercontent.com/trtrantnt/ValTimer/main/p2.png)
+
+### Bottom-left overlay in-game
+
+![ValTimer Main Interface](https://raw.githubusercontent.com/trtrantnt/ValTimer/main/p1.png)
 
 ---
 
@@ -113,7 +113,7 @@ Perfect for:
 
 ### Option 1: Download Executable (Recommended)
 
-1. Go to [Releases](https://github.com/trtrantnt/ValTimerv1.2/releases)
+1. Go to [Releases](https://github.com/trtrantnt/ValTimer/releases)
 2. Download the latest `ValTimer.exe`
 3. Run the executable (no installation needed!)
 
@@ -121,8 +121,8 @@ Perfect for:
 
 ```bash
 # Clone the repository
-git clone https://github.com/trtrantnt/ValTimerv1.2.git
-cd ValTimerv1.2
+git clone https://github.com/trtrantnt/ValTimer.git
+cd ValTimer
 
 # Install dependencies
 pip install -r requirements.txt
@@ -213,8 +213,8 @@ The tool will generate:
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/trtrantnt/ValTimerv1.2.git
-cd ValTimerv1.2
+git clone https://github.com/trtrantnt/ValTimer.git
+cd ValTimer
 
 # 2. Install dependencies
 pip install -r requirements.txt
@@ -226,16 +226,6 @@ python -m PyInstaller --onefile --windowed --name "ValTimer" timer_valo.py
 cd dist
 ```
 
-### Custom Icon (Optional)
-
-```bash
-# Generate custom icon
-python app_icon.py
-
-# See CUSTOM_ICON.md for detailed instructions
-```
-
----
 
 ## 🛠️ Technologies
 
@@ -326,8 +316,8 @@ A: **Spike Info** shows game mechanics (plant/defuse timings), while **About Me*
 
 Contributions are welcome! Here's how you can help:
 
-1. 🐛 **Report Bugs**: [Submit an issue](https://github.com/trtrantnt/ValTimerv1.2/issues)
-2. 💡 **Request Features**: [Open a feature request](https://github.com/trtrantnt/ValTimerv1.2/issues)
+1. 🐛 **Report Bugs**: [Submit an issue](https://github.com/trtrantnt/ValTimer/issues)
+2. 💡 **Request Features**: [Open a feature request](https://github.com/trtrantnt/ValTimer/issues)
 3. 🔧 **Submit Pull Requests**:
    ```bash
    # Fork the repo
